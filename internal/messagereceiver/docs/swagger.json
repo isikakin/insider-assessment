@@ -1,0 +1,222 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a message receiver api",
+        "title": "Message Receiver API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Gets the list of sent messages",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Message"
+                ],
+                "summary": "Retrieve sent messages",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "value for pagination",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GetMessagesResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update auto message sender job status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Message"
+                ],
+                "summary": "Update job status",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UpdateJobStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Used to send messages",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Message"
+                ],
+                "summary": "Send Message",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "uuid formatted id",
+                        "name": "messageId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "request body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SendMessageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/model.SendMessageResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "entity.Message": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "messageId": {
+                    "type": "string"
+                },
+                "recipient": {
+                    "type": "string"
+                },
+                "sentDate": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/enum.MessageStatus"
+                }
+            }
+        },
+        "enum.MessageStatus": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "Pending",
+                "Sent"
+            ]
+        },
+        "model.GetMessagesResponse": {
+            "type": "object",
+            "properties": {
+                "currentPage": {
+                    "type": "integer"
+                },
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.Message"
+                    }
+                },
+                "totalPageCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.SendMessageRequest": {
+            "type": "object",
+            "required": [
+                "content",
+                "to"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 3
+                },
+                "to": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SendMessageResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "messageId": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UpdateJobStatus": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "x-ins-auth-key",
+            "in": "header"
+        }
+    }
+}

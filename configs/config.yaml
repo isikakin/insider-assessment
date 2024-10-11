@@ -1,0 +1,4 @@
+apiKey: "1caad664-8a8c-44ac-bfb1-e87ad59ff3b6"
+redis:
+  url: "redis:6379"
+  password: ""

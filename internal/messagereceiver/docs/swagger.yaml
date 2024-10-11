@@ -1,0 +1,143 @@
+definitions:
+  entity.Message:
+    properties:
+      content:
+        type: string
+      createdAt:
+        type: string
+      messageId:
+        type: string
+      recipient:
+        type: string
+      sentDate:
+        type: string
+      status:
+        $ref: '#/definitions/enum.MessageStatus'
+    type: object
+  enum.MessageStatus:
+    enum:
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - Pending
+    - Sent
+  model.GetMessagesResponse:
+    properties:
+      currentPage:
+        type: integer
+      messages:
+        items:
+          $ref: '#/definitions/entity.Message'
+        type: array
+      totalPageCount:
+        type: integer
+    type: object
+  model.SendMessageRequest:
+    properties:
+      content:
+        maxLength: 20
+        minLength: 3
+        type: string
+      to:
+        type: string
+    required:
+    - content
+    - to
+    type: object
+  model.SendMessageResponse:
+    properties:
+      message:
+        type: string
+      messageId:
+        type: string
+    type: object
+  model.UpdateJobStatus:
+    properties:
+      status:
+        type: boolean
+    type: object
+info:
+  contact: {}
+  description: This is a message receiver api
+  title: Message Receiver API
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Gets the list of sent messages
+      parameters:
+      - description: value for pagination
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetMessagesResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve sent messages
+      tags:
+      - Message
+    post:
+      consumes:
+      - application/json
+      description: Used to send messages
+      parameters:
+      - description: uuid formatted id
+        in: path
+        name: messageId
+        required: true
+        type: string
+      - description: request body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/model.SendMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/model.SendMessageResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Send Message
+      tags:
+      - Message
+    put:
+      consumes:
+      - application/json
+      description: Update auto message sender job status
+      parameters:
+      - description: request body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateJobStatus'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Update job status
+      tags:
+      - Message
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: x-ins-auth-key
+    type: apiKey
+swagger: "2.0"
